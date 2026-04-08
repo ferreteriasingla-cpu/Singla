@@ -448,9 +448,20 @@ const PER_PAGE = 30;
 let clientSort = { key: 'id', dir: 1 };
 let activeTab = 'pedidos';
 
+// ===== HELPERS (must be before init) =====
+function sk(s) {
+  if (!s) return 'PENDIENTE';
+  s = s.toUpperCase().replace(/[\s-]+/g,'_');
+  if (s.includes('ON_GOING') || s.includes('ONGOING')) return 'ON_GOING';
+  if (s === 'OK') return 'OK';
+  if (s === 'KO') return 'KO';
+  return 'PENDIENTE';
+}
+const SL = { PENDIENTE:'⏳ Pendiente', ON_GOING:'🔄 En Proceso', OK:'✅ OK', KO:'❌ KO' };
+function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+
 // ===== INIT =====
 loadCache();
-// Always hide loading overlay on start — only show when actively syncing
 setLoading(false);
 
 if (SCRIPT_URL) {
@@ -459,7 +470,6 @@ if (SCRIPT_URL) {
   renderAll();
   syncAll();
 } else {
-  // No URL yet — show config banner, render with empty/cached data
   document.getElementById('configBanner').classList.add('show');
   renderAll();
 }
@@ -481,18 +491,6 @@ function showTab(tab) {
   });
   if (tab === 'clientes') renderClients();
 }
-
-// ===== HELPERS =====
-function sk(s) {
-  if (!s) return 'PENDIENTE';
-  s = s.toUpperCase().replace(/[\s-]+/g,'_');
-  if (s.includes('ON_GOING') || s.includes('ONGOING')) return 'ON_GOING';
-  if (s === 'OK') return 'OK';
-  if (s === 'KO') return 'KO';
-  return 'PENDIENTE';
-}
-const SL = { PENDIENTE:'⏳ Pendiente', ON_GOING:'🔄 En Proceso', OK:'✅ OK', KO:'❌ KO' };
-function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
 
 // ===== KPIs =====
 function renderKPIs() {
